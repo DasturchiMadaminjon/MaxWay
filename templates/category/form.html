@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <strong>Ma'lumotlarni to'ldiring</strong>
+                        </div>
+                        <div class="card-body card-block">
+                            <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-primary btn-sm">Saqlash</button>
+                                    <a href="." class="btn btn-danger btn-sm">Bekor qilish</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

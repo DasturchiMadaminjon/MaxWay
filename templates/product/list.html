@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 class="title-5 m-b-35">Mahsulotlar Ro'yxati</h3>
+                    <div class="table-data__tool">
+                        <div class="table-data__tool-right">
+                            <a href="{% url 'product_create' %}" class="au-btn au-btn-icon au-btn--green au-btn--small">
+                                <i class="zmdi zmdi-plus"></i>Mahsulot qo'shish</a>
+                        </div>
+                    </div>
+                    <div class="table-responsive table-responsive-data2">
+                        <table class="table table-data2">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nomi</th>
+                                    <th>Narxi</th>
+                                    <th>Kategoriyasi</th>
+                                    <th>Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in products %}
+                                <tr class="tr-shadow">
+                                    <td>{{ item.id }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.price }} so'm</td>
+                                    <td><span class="status--process">{{ item.category_name }}</span></td>
+                                    <td>
+                                        <div class="table-data-feature">
+                                            <a href="{% url 'product_edit' item.id %}" class="item"><i class="zmdi zmdi-edit"></i></a>
+                                            <a href="{% url 'product_delete' item.id %}" class="item"><i class="zmdi zmdi-delete text-danger"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="spacer"></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

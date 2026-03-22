@@ -1,0 +1,46 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-container">
+    <div class="main-content">
+        <div class="section__content section__content--p30">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="overview-wrap">
+                            <h2 class="title-1">Stollar</h2>
+                            <a href="{% url 'table_create' %}" class="au-btn au-btn-icon au-btn--blue">
+                                <i class="zmdi zmdi-plus"></i>Qo'shish</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row m-t-30">
+                    <div class="col-md-12">
+                        <div class="table-responsive m-b-40">
+                            <table class="table table-borderless table-data3">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th><th>Stol</th><th>Sig'im</th><th>Filial</th>
+                                        <th>Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in tables %}
+                                    <tr>
+                                        <td>{{ item.id }}</td><td>{{ item.name }}</td><td>{{ item.capacity }}</td><td>{{ item.branch_name }}</td>
+                                        <td>
+                                            <a href="{% url 'table_edit' item.id %}" class="btn btn-warning btn-sm">Tahrirlash</a>
+                                            <a href="{% url 'table_delete' item.id %}" class="btn btn-danger btn-sm">O'chirish</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

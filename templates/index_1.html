@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaxWay - Mazzali Ta'mlar</title>
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      .box__img img.img { width: 100%; height: 180px; object-fit: contain; padding: 10px; }
+      .modal { display: none; position: fixed; right: 0; top: 0; width: 400px; height: 100%; background: #fff; z-index: 1000; box-shadow: -10px 0 30px rgba(0,0,0,0.1); padding: 30px; overflow-y: auto; }
+      .modal.active { display: block; }
+      .cat-section { display: block; margin-bottom: 40px; }
+      .row { display: flex; flex-wrap: wrap; margin: 0 -10px; }
+      .col-6 { padding: 10px; }
+      .box { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; height: 100%; }
+      .box:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    </style>
+  </head>
+  <body> 
+    <!-- MOBILE MENU (Dizayn saqlangan) -->
+    <div class="mobMenu"> 
+      <div class="container"> 
+        <div class="menu"> 
+          <div class="logo"><a href="/"><img src="{% static 'assets/img/bitmap.png' %}" height="40" alt="MaxWay"></a></div>
+          <button class="main"> <span></span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="container"> 
+        <div class="menu"> 
+          <div class="logo"><a href="/"><img src="{% static 'assets/img/bitmap.png' %}" height="50" alt="MaxWay"></a></div>
+          <div class="menu__ul"> 
+            <ul> 
+              <li class="list"><a href="{% url 'food_index' %}">Menyu</a></li>
+              <li class="list"><a href="#">Filiallar</a></li>
+              <li class="list"><a href="#">Bolalar uchun</a></li>
+            </ul>
+            <div class="phone--shop">
+              <div class="phone"> 
+                <div class="phone--text"><a href="tel:998712005400" style="text-decoration:none; color:inherit;">(+99871)<br><span class="phoneSpan" style="font-weight: 800; font-size: 1.2em;"> 200-54-00</span></a></div>
+              </div>
+              <div class="shop">
+                <button class="shop--icon" onclick="location.href='{% url 'food_order' %}'" style="background:none; border:none; cursor:pointer;">
+                   <svg width="22" height="24" viewBox="0 0 18 21" fill="none"><path d="M4 7V5c0-2.8 2.2-5 5-5s5 2.2 5 5v2h3v13c0 .6-.4 1-1 1H1c-.6 0-1-.4-1-1V8c0-.6.4-1 1-1h3zm2 2H2v10h14V9h-2v2h-2V9H6v2H4V9zm8-4v2H6V5c0-1.7 1.3-3 3-3s3 1.3 3 3z" fill="#F1B301"/></svg>
+                </button>
+                <div class="shop--text"> <a href="{% url 'food_order' %}" style="text-decoration:none; color:inherit;"> Korzina<br><span class="shopSpan" id="basket-count-top" style="font-weight: 800; color: #F1B301;">{{ basket_count }} ta</span></a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Banner -->
+        <div class="header__content"> 
+           <div class="header__content--decs">
+             <div class="header__content--title">Siz izlagan mazzali ta’mlar</div>
+             <div class="header__content--text">MaxWay - har bir luqma baxt ulashadi! Biz bilan hayotingiz yanada mazali.</div>
+           </div>
+           <div class="header__content--img"> <img src="{% static 'assets/img/bitmap.png' %}" alt=""></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BASKET MODAL -->
+    <div class="modal" id="order-modal"> 
+      <div class="title" style="font-size: 24px; color: #800A7A; margin-bottom: 20px;">Savat</div>
+      <button class="close" onclick="toggleModal()" style="position: absolute; right: 20px; top: 20px; background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
+      <div id="modal-items-list">
+         <!-- Savat elementlari bu yerga AJAX orqali tushadi (ixtiyoriy) yoki oddiy link -->
+         <p style="color: #666;">Savatni ko'rish va buyurtma berish uchun pastdagi tugmani bosing.</p>
+      </div>
+      <div class="buttons" style="margin-top: 30px;">
+        <button class="order" style="width: 100%; padding: 15px; background: #800A7A; color: #fff; border: none; border-radius: 8px; cursor: pointer;" onclick="location.href='{% url 'food_order' %}'"> Buyurtma berish </button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content"> 
+      <div class="container"> 
+        <!-- Dynamic Category Filter -->
+        <div class="filter" id="category-filter"> 
+          <button class="active" data-id="all">Barchasi</button>
+          {% for cat in categories %}
+            <button data-id="cat-{{ cat.id }}">{{ cat.name }}</button>
+          {% endfor %}
+        </div>
+
+        <div class="slide"> 
+          {% for cat in categories %}
+          <div class="big__title cat-section-{{ cat.id }}">{{ cat.name }}</div>
+          <div class="row cat-section-{{ cat.id }}"> 
+            {% for p in cat.products.all %}
+            <div class="col-6 col-md-12 col-xs-12"> 
+              <div class="item">
+                <div class="box"> 
+                  <div class="box__img"> 
+                     {% if p.image %}
+                        <img class="img" src="{{ p.image.url }}" alt="{{ p.name }}"/>
+                     {% else %}
+                        <img class="img" src="{% static 'assets/img/burger.png' %}" alt="default"/>
+                     {% endif %}
+                  </div>
+                  <div class="box__content"> 
+                    <div class="box__title">{{ p.name }}</div>
+                    <div class="box__text">{{ p.description|default:"Mazzali ta'm, ajoyib sifat."|truncatewords:12 }}</div>
+                    <div class="cost__btn">
+                      <div class="box__cost" style="color: #800A7A; font-weight: bold;">{{ p.price }} UZS</div>
+                      <button class="box__btn" onclick="addToBasket({{ p.id }})"> <img src="{% static 'assets/img/plus.png' %}" alt="Add"/></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- MOB PATTERN / APP BANNER -->
+    <div class="pattern"> 
+      <img class="path" src="{% static 'assets/img/path.png' %}" alt="">
+      <div class="container"> 
+        <div class="pattern__content">
+          <div class="big__title" style="color: #fff;">Mobil ilovamiz orqali buyurtma berish yanada osonroq</div>
+          <div class="social" style="margin-top: 20px;"> 
+            <img src="{% static 'assets/img/googleplay.png' %}" height="45" style="margin-right: 15px; cursor: pointer;">
+            <img src="{% static 'assets/img/apple.png' %}" height="45" style="cursor: pointer;">
+          </div>
+        </div>
+      </div>
+      <div class="pattern__img"> <img class="phone" src="{% static 'assets/img/big__phone.png' %}" alt=""></div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer" style="background: #fff; padding: 40px 0; border-top: 1px solid #eee;">
+      <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+         <div class="logo"><img src="{% static 'assets/img/bitmap.png' %}" height="50"></div>
+         <div class="contacts" style="text-align: right;">
+            <div style="font-weight: bold;">(+998 71) 200-54-00</div>
+            <div style="color: #777; font-size: 0.9em;">Toshkent sh., MaxWay markazi</div>
+         </div>
+      </div>
+    </footer>
+
+    <script>
+      function toggleModal() {
+          $('#order-modal').toggleClass('active');
+      }
+
+      function addToBasket(pid) {
+          fetch(`/add-to-basket/${pid}/`)
+          .then(response => response.json())
+          .then(data => {
+              if(data.status === 'ok') {
+                  $('#basket-count-top').text(data.count + ' ta').css('color', '#800A7A');
+                  alert('Mahsulot savatga qo\'shildi!');
+              }
+          });
+      }
+
+      $('#category-filter button').on('click', function() {
+          var id = $(this).data('id');
+          $('#category-filter button').removeClass('active');
+          $(this).addClass('active');
+
+          if(id === 'all') {
+              $('.slide .row, .slide .big__title').show();
+          } else {
+              $('.slide .row, .slide .big__title').hide();
+              var sectionId = id.replace('cat-', 'cat-section-');
+              $('.' + sectionId).show();
+          }
+      });
+    </script>
+  </body>
+</html>
